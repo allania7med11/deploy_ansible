@@ -1,8 +1,14 @@
 - name: install nginx
   apt: name=nginx state=latest
 
-- name: Unlink default Nginx configuration
+- name: Check if Nginx default site is linked
+  stat:
+    path: /etc/nginx/sites-enabled/default
+  register: nginx_default
+
+- name: Unlink default Nginx configuration if it exists
   command: unlink /etc/nginx/sites-enabled/default
+  when: nginx_default.stat.exists
   ignore_errors: true
   
 - name: start nginx
