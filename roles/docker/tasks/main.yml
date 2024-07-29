@@ -1,0 +1,40 @@
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: Update apt and install docker-ce
+  apt:
+    name: docker-ce
+    state: latest
+    update_cache: true
+
+- name: Install Docker Module for Python
+  pip:
+    name: docker
+
+- name: Add current user to docker group
+  user:
+    name: "{{ lookup('env', 'USER') }}"
+    groups: docker
+    append: yes
+
+- name: Set permissions on Docker socket
+  file:
+    path: /var/run/docker.sock
+    mode: "o+rw"
+
+- name: Test Docker works without sudo
+  command: docker run hello-world
+  register: docker_test
+  failed_when: "'Hello from Docker!' not in docker_test.stdout"
+  become: false
+
+- name: Display Docker test output
+  debug:
+    msg: "{{ docker_test.stdout }}"
