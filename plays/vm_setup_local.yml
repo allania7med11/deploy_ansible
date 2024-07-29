@@ -6,7 +6,7 @@
     postgres_password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
   become: true
   roles:
-    - aptitude
-    - postgres
-    - docker
-    - nginx
+    - { role: roles/aptitude }
+    - { role: roles/postgres }
+    - { role: roles/docker }
+    - { role: roles/nginx }
