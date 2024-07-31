@@ -1,0 +1,17 @@
+server {
+    {% if server %}server_name {{ server }};{% endif %}
+    {% if listen_port %}listen {{ listen_port }};{% endif %}
+
+    location  /api/users/contact/ {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Host $http_host;
+            proxy_redirect off;
+            proxy_pass {{ backend }};
+    }
+
+    location / {
+            autoindex on;
+            alias /var/www/{{ project_name }}/;
+    }
+}
